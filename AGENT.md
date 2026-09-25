@@ -49,3 +49,7 @@ The developer requested API test-coverage planning and boilerplate test cases fo
 ### Test-Coverage Prompt
 
 > Propose focused API integration coverage for the Lead Tracker. Cover health, lead creation, input validation, duplicate-email handling, list/search/filter/pagination, status updates, missing leads, and unknown routes. Keep the suite focused on externally observable API behavior; do not add low-value duplicate tests without a concrete reason.
+
+## Frontend Shell
+
+The developer requested a basic React application shell for the Leads feature: Tailwind styling, Roboto, Axios and TanStack Query providers, a semantic reusable table, and TanStack Table with server-side sorting. The developer selected the feature structure: `src/app/leads` for leads screen, table, types, and utilities; `src/common` for shared Axios and table components.

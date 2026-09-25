@@ -1,11 +1,5 @@
+import { LeadsScreen } from './app/leads/leads.screen';
 
-const App = () => {
-    
-  return (
-    <main>
-      <h1>Lead Tracker</h1>
-    </main>
-  )
-}
+const App = () => <LeadsScreen />;
 
-export default App
+export default App;
