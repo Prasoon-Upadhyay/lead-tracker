@@ -12,5 +12,3 @@ export type { Lead, LeadStatus };
 export type CreateLeadInput = z.infer<typeof createLeadSchema>;
 export type GetAllLeadsInput = z.infer<typeof getAllLeadsSchema>;
 export type UpdateLeadStatusInput = z.infer<typeof updateLeadStatusSchema>;
-
-

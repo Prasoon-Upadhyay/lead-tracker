@@ -1,4 +1,5 @@
-﻿import leadsDb from './leads.db.js';
+﻿import { pagination } from '../../common/pagination.utils.js';
+import leadsDb from './leads.db.js';
 import type { CreateLeadInput, GetAllLeadsInput, UpdateLeadStatusInput } from './leads.types.js';
 
 export const leadsService = {
@@ -13,12 +14,11 @@ export const leadsService = {
   },
 
   async getAll(input: GetAllLeadsInput) {
-    const skip = (input.page - 1) * input.limit;
     const options = {
       search: input.search,
       status: input.status,
-      skip,
-      take: input.limit,
+      sort: input.sort,
+      ...pagination(input.page, input.limit),
     };
     const [leads, total] = await Promise.all([leadsDb.findMany(options), leadsDb.count(options)]);
 
@@ -41,4 +41,3 @@ export const leadsService = {
     return leadsDb.updateStatus(id, input.status);
   },
 };
-

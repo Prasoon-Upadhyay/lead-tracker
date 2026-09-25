@@ -28,3 +28,13 @@ export class ApiRoutes {
   static readonly LEADS = `/api/${ApiRoutes.VERSION}/leads`;
 }
 
+export class SortableColumns {
+  static readonly LEADS = ['name', 'email', 'status', 'createdAt'] as const;
+  static readonly DEFAULT_LEADS = '-createdAt';
+}
+
+export class Pagination {
+  static readonly DEFAULT_PAGE = 1;
+  static readonly DEFAULT_LIMIT = 10;
+  static readonly MAX_LIMIT = 100;
+}

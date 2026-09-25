@@ -1,9 +1,13 @@
 ﻿import type { LeadStatus, Prisma } from '@prisma/client';
 
+import { SortableColumns } from '../../common/literals.js';
+import { orderBy } from '../../common/sort.utils.js';
 import { prisma } from '../../common/prisma.js';
-import { type LeadFilters, where } from './leads.utils.js';
+import type { LeadFilters } from './leads.utils.js';
+import { where } from './leads.utils.js';
 
 type FindLeadsOptions = LeadFilters & {
+  sort: string;
   skip: number;
   take: number;
 };
@@ -15,7 +19,7 @@ const leadsDb = {
   findMany: (options: FindLeadsOptions) =>
     prisma.lead.findMany({
       where: where(options),
-      orderBy: { createdAt: 'desc' },
+      orderBy: orderBy(options.sort, SortableColumns.LEADS) as Prisma.LeadOrderByWithRelationInput,
       skip: options.skip,
       take: options.take,
     }),

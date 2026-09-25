@@ -80,6 +80,24 @@ describe('Lead API', () => {
     expect(response.status).toBe(Status.BAD_REQUEST);
   });
 
+  it('sorts leads in ascending and descending order', async () => {
+    await createLead();
+    await createLead({
+      name: 'PQR',
+      email: 'pqr@example.com',
+      phone: '+912222222222',
+    });
+
+    const ascendingResponse = await request(app).get(ApiRoutes.LEADS).query({ sort: 'name' });
+    const descendingResponse = await request(app).get(ApiRoutes.LEADS).query({ sort: '-name' });
+    const ascendingNames = ascendingResponse.body.data.map((lead: { name: string }) => lead.name);
+
+    expect(ascendingNames).toEqual([...ascendingNames].sort());
+    expect(descendingResponse.body.data.map((lead: { name: string }) => lead.name)).toEqual(
+      [...ascendingNames].reverse(),
+    );
+  });
+
   it('updates a lead status', async () => {
     const createResponse = await createLead();
     const response = await request(app)
@@ -108,3 +126,5 @@ describe('Lead API', () => {
     expect(response.status).toBe(Status.NOT_FOUND);
   });
 });
+
+
