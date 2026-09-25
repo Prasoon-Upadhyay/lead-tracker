@@ -42,3 +42,10 @@ The developer independently selected feature-first organization because it keeps
 
 Before marking a commit ready, run the applicable build command and report its result. Do not stage, commit, push, create migrations, or change environment files unless explicitly requested.
 
+## Testing
+
+The developer requested API test-coverage planning and boilerplate test cases for the Lead API. Codex generated the initial Vitest/Supertest test scaffolding; the developer reviews the selected scenarios, prepares the dedicated test database, and validates the final test results.
+
+### Test-Coverage Prompt
+
+> Propose focused API integration coverage for the Lead Tracker. Cover health, lead creation, input validation, duplicate-email handling, list/search/filter/pagination, status updates, missing leads, and unknown routes. Keep the suite focused on externally observable API behavior; do not add low-value duplicate tests without a concrete reason.
