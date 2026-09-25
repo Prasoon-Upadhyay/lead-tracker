@@ -1,11 +1,25 @@
 ﻿import type { LeadStatus, Prisma } from '@prisma/client';
 
 import { prisma } from '../../common/prisma.js';
+import { type LeadFilters, where } from './leads.utils.js';
 
-const queries = {
+type FindLeadsOptions = LeadFilters & {
+  skip: number;
+  take: number;
+};
+
+const leadsDb = {
   create: (data: Prisma.LeadCreateInput) => prisma.lead.create({ data }),
+  findByEmail: (email: string) => prisma.lead.findUnique({ where: { email } }),
   findById: (id: string) => prisma.lead.findUnique({ where: { id } }),
-  findMany: () => prisma.lead.findMany({ orderBy: { createdAt: 'desc' } }),
+  findMany: (options: FindLeadsOptions) =>
+    prisma.lead.findMany({
+      where: where(options),
+      orderBy: { createdAt: 'desc' },
+      skip: options.skip,
+      take: options.take,
+    }),
+  count: (options: LeadFilters) => prisma.lead.count({ where: where(options) }),
   updateStatus: (id: string, status: LeadStatus) =>
     prisma.lead.update({
       where: { id },
@@ -13,4 +27,4 @@ const queries = {
     }),
 };
 
-export default queries;
+export default leadsDb;
