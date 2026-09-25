@@ -1,4 +1,4 @@
-﻿import {
+import {
   flexRender,
   getCoreRowModel,
   useReactTable,
@@ -56,7 +56,11 @@ const SortIcon = ({ state }: { state?: 'asc' | 'desc' }) => {
   return <ArrowUpDown size={15} strokeWidth={2} />;
 };
 
-export const LeadsTable = ({ data, total = 0, onSortChange }: LeadsTableProps) => {
+export const LeadsTable = ({
+  data,
+  total = 0,
+  onSortChange,
+}: LeadsTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const table = useReactTable({
     data,
@@ -117,7 +121,7 @@ export const LeadsTable = ({ data, total = 0, onSortChange }: LeadsTableProps) =
           </Table.Head>
 
           <Table.Body>
-            {table.getRowModel().rows.length ? (
+            {data.length > 0 ? (
               table.getRowModel().rows.map((row) => (
                 <Table.Row key={row.id}>
                   {row.getVisibleCells().map((cell) => (

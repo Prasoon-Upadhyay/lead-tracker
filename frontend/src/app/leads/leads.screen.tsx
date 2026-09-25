@@ -1,6 +1,46 @@
-import { Plus } from 'lucide-react';
+import { LoaderCircle, Plus } from 'lucide-react';
+import { useCallback, useRef, useState } from 'react';
+
+import { LEADS_PER_PAGE, SEARCH_DEBOUNCE_MS } from './leads.constants';
+import { useAllLeads } from './leads.data';
 import { LeadsTable } from './leads-table.components';
+import type { LeadSort } from './leads.types';
+
 export const LeadsScreen = () => {
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
+  const [sort, setSort] = useState<LeadSort>();
+  const {
+    data: leads,
+    isError,
+    isLoading,
+    refetch,
+  } = useAllLeads({
+    page,
+    limit: LEADS_PER_PAGE,
+    search: search || undefined,
+    sort,
+  });
+
+  const searchTimeout = useRef<number | undefined>(undefined);
+
+  const debouncedSearch = useCallback((value: string) => {
+    if (searchTimeout.current) {
+      window.clearTimeout(searchTimeout.current);
+    }
+
+    searchTimeout.current = window.setTimeout(() => {
+      setPage(1);
+      setSearch(value.trim());
+    }, SEARCH_DEBOUNCE_MS);
+  }, []);
+
+  const handleSortChange = useCallback((nextSort?: LeadSort) => {
+    setPage(1);
+    setSort(nextSort);
+  }, []);
+
+
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-8 font-sans sm:px-6 lg:px-8">
       <section className="mx-auto max-w-6xl">
@@ -18,7 +58,70 @@ export const LeadsScreen = () => {
             <Plus size={18} /> Add lead
           </button>
         </header>
-        <LeadsTable data={[]} />
+
+        <div className="mb-5">
+          <label className="sr-only" htmlFor="lead-search">
+            Search leads
+          </label>
+          <input
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500"
+            id="lead-search"
+            defaultValue=""
+            onChange={(event) => debouncedSearch(event.currentTarget.value)}
+            placeholder="Search by name or email"
+            type="search"
+          />
+        </div>
+
+        {isLoading ? (
+          <section className="flex min-h-48 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white p-5 text-slate-400 shadow-sm">
+            <LoaderCircle aria-label="Loading leads" className="size-5 animate-spin text-slate-400" />
+            <span>Getting your leads...</span>
+          </section>
+        ) : isError ? (
+          <section className="flex min-h-48 flex-col items-center justify-center rounded-xl border border-rose-200 bg-rose-50 p-5 text-center text-rose-800" role="alert">
+            <p className="font-semibold">Could not load leads.</p>
+            <button
+              className="mt-3 cursor-pointer rounded-lg bg-rose-700 px-3 py-2 text-sm font-semibold text-white transition hover:bg-rose-600 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2"
+              onClick={() => refetch()}
+              type="button"
+            >
+              Try again
+            </button>
+          </section>
+        ) : (
+          <>
+            <LeadsTable
+              data={leads?.data ?? []}
+              onSortChange={handleSortChange}
+              total={leads?.meta.total}
+            />
+
+            {leads && leads.meta.totalPages > 1 ? (
+              <nav className="mt-5 flex items-center justify-between" aria-label="Lead pagination">
+                <button
+                  className="cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={page === 1}
+                  onClick={() => setPage((currentPage) => currentPage - 1)}
+                  type="button"
+                >
+                  Previous
+                </button>
+                <span className="text-sm text-slate-600">
+                  Page {leads.meta.page} of {leads.meta.totalPages}
+                </span>
+                <button
+                  className="cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={page === leads.meta.totalPages}
+                  onClick={() => setPage((currentPage) => currentPage + 1)}
+                  type="button"
+                >
+                  Next
+                </button>
+              </nav>
+            ) : null}
+          </>
+        )}
       </section>
     </main>
   );
